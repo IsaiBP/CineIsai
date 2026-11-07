@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendador de Películas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f8bbd0 0%, #e1bee7 50%, #f48fb1 100%);
+            color: #000;
+            padding: 30px;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .container {
+            background-color: rgba(255, 245, 238, 0.85); 
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 2em;
+        }
+        .menu-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 20px 0;
+        }
+        .description {
+            margin-bottom: 25px;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        input[type="number"] {
+            padding: 4px;
+            width: 70px;
+            font-size: 1em;
+            border: 1px solid #999;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 35px;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #f0f0f0;
+            border: 1px solid #000;
+            border-radius: 3px;
+            cursor: pointer;
+            flex: 1;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+        .recommendation-label {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        #resultado {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 0;
+        }
+        .entrega-links {
+            margin-top: 40px;
+            border-top: 2px dashed #800080;
+            padding-top: 15px;
+        }
+        .entrega-links a {
+            display: block;
+            margin: 8px 0;
+            color: #4a148c;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .entrega-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1> Bienvenidos al Cineeee!!  - Clarence Isai Ortega Rangel </h1>
+
+        <div class="menu-title">--- Menú ---</div>
+
+        <p class="description">
+            Queremos hacer de tu visita, una experiencia más placentera. Para eso, ingresa tu edad y selecciona el género que más te guste, y te recomendamos tu pelicula ideal.
+        </p>
+
+        <div class="input-group">
+            <label for="edad">Edad: </label>
+            <input type="number" id="edad" value="20" min="2">
+        </div>
+
+        <div class="btn-group">
+            <button onclick="recomendarPelicula('Drama')">Drama</button>
+            <button onclick="recomendarPelicula('Comedia')">Comedia</button>
+            <button onclick="recomendarPelicula('Musical')">Musical</button>
+            <button onclick="recomendarPelicula('Crimen')">Crimen</button>
+        </div>
+
+        <div class="recommendation-label">Nuestra recomendación:</div>
+        <div id="resultado">The Godfather</div>
+
+        <!-- Links para adjuntar en Classroom -->
+        <div class="entrega-links">
+            <p><strong>Enlaces del Proyecto:</strong></p>
+            <!-- Reemplaza el # por tu link de GitHub antes de entregar -->
+            <a href="#" id="github-link">📁 Repositorio en GitHub: [Pega tu link aquí]</a>
+            <!-- Reemplaza el # por tu link de Vercel/GitHub Pages antes de entregar -->
+            <a href="#" id="prod-link">🚀 Proyecto en Producción (Vercel/Pages): [Pega tu link aquí]</a>
+        </div>
+    </div>
+
+    <script>
+///// simulacion pelis 
+        const dbPeliculas = [
+            // 2-12
+            { edadMin: 2, edadMax: 12, genero: "Drama", titulo: "El Rey León" },
+            { edadMin: 2, edadMax: 12, genero: "Comedia", titulo: "Intensa Mente" },
+            { edadMin: 2, edadMax: 12, genero: "Musical", titulo: "Sing: ¡Ven y canta!" },
+            { edadMin: 2, edadMax: 12, genero: "Crimen", titulo: "Zootopia" },
+
+            // 13-17
+            { edadMin: 13, edadMax: 17, genero: "Drama", titulo: "El niño con el pijama de rayas" },
+            { edadMin: 13, edadMax: 17, genero: "Comedia", titulo: "Superbad" },
+            { edadMin: 13, edadMax: 17, genero: "Musical", titulo: "La La Land" },
+            { edadMin: 13, edadMax: 17, genero: "Crimen", titulo: "Knives Out" },
+
+            // Categoría 18 o más
+            { edadMin: 18, edadMax: 150, genero: "Drama", titulo: "Taxi Driver" },
+            { edadMin: 18, edadMax: 150, genero: "Comedia", titulo: "The Hangover" },
+            { edadMin: 18, edadMax: 150, genero: "Musical", titulo: "Sweeney Todd" },
+            { edadMin: 18, edadMax: 150, genero: "Crimen", titulo: "The Godfather" }
+        ];
+
+        function recomendarPelicula(generoElegido) {
+            const edadInput = document.getElementById('edad').value;
+            const edad = parseInt(edadInput);
+            const resultado = document.getElementById('resultado');
+
+            if (isNaN(edad) || edad < 2) {
+                resultado.textContent = "Ingresa una edad válida (mínimo 2).";
+                return;
+            }
+
+            // Filstrado supuesto de la base de "datos"
+            const peliculaRecomendada = dbPeliculas.find(peli => 
+                edad >= peli.edadMin && 
+                edad <= peli.edadMax && 
+                peli.genero === generoElegido
+            );
+
+            if (peliculaRecomendada) {
+                resultado.textContent = peliculaRecomendada.titulo;
+            } else {
+                resultado.textContent = "Sin recomendaciones para esta selección.";
+            }
+        }
+    </script>
+</body>
+</html>
